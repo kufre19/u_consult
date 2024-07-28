@@ -1,0 +1,56 @@
+version: "3.1"
+services:
+  app:
+    image: uconsult
+    container_name: uconsult_php
+    build: 
+      context: .
+      dockerfile: .
+      args:
+          UID: "1000" # Replace with your host user's UID
+          GID: "1000" # Replace with your host user's GID
+    restart: "no"
+    ports:
+     
+      - 8000:8000
+    volumes:
+      - ./:/var/www/html
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - uconsult
+
+    command: "php artisan serve --host=0.0.0.0 --port=8000"
+
+   
+
+  db:
+    image: mysql:latest
+    container_name: mysql_db_uconsult
+    restart: "no"
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - db_data_uconsult:/docker-entrypoint-initdb.d
+      - db_data_uconsult:/var/lib/mysql
+    networks:
+      - uconsult
+   
+  
+  phpmyadmin:
+    image: phpmyadmin:5.2.0-apache
+    restart: "no"
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - uconsult
+
+
+networks:
+  uconsult:
+    driver: bridge
+
+
+volumes:
+  db_data_uconsult:
