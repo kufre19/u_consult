@@ -112,7 +112,7 @@
               
               <div class="col-12">
                   <div class="text-start">
-                      <p class="mb-0">Already have an account? <a href="{{ route('login') }}">Sign in here</a></p>
+                      <p class="mb-0">Already have an account? <a href="{{ route('sign-in') }}">Sign in here</a></p>
                   </div>
               </div>
           </form>
