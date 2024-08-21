@@ -7,7 +7,9 @@ use App\Jobs\CreateStripeAccount;
 use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Request;
+// use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\URL;
 
 class VerificationController extends Controller
