@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes(['verify' => true]);
 
+Route::get('/', function () {
+    return view('app.login');
+})->name("sign-in");
 
 Route::get('/sign-in', function () {
     return view('app.login');
