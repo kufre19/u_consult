@@ -33,10 +33,15 @@ Route::get('/sign-up', function () {
     return view('app.signup');
 })->name("sign-up");
 
-Route::middleware(['auth', 'verified', 'stripe.onboarding'])->prefix("dashboard")->group(function () {
-
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/stripe/onboarding', [StripeOnboardingController::class, 'initiateOnboarding'])->name('stripe.onboarding');
     Route::get('/stripe/onboarding/complete', [StripeOnboardingController::class, 'completeOnboarding'])->name('stripe.onboarding.complete');
+    
+});
+
+Route::middleware(['auth', 'verified', 'stripe.onboarding'])->prefix("dashboard")->group(function () {
+
+  
 
     Route::get('/', function () {
         return view('app.dashboard');

@@ -11,7 +11,7 @@ class StripeOnboardingController extends Controller
 {
     public function initiateOnboarding(Request $request)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+        Stripe::setApiKey(env('STRIPE_SK'));
 
         $user = $request->user();
 
