@@ -20,7 +20,7 @@
                         @if(auth()->user()->hasCompletedStripeOnboarding())
                             <button type="button" class="btn btn-outline-primary">New Invoice</button>
                         @else
-                            <a href="{{ route('stripe.onboarding') }}" class="btn btn-outline-warning">Complete Stripe Onboarding</a>
+                            <a href="{{ route('stripe.onboarding') }}" class="btn btn-outline-primary">Complete Stripe Onboarding</a>
                         @endif
                     </div>
                 </div>

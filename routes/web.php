@@ -33,6 +33,9 @@ Route::get('/sign-up', function () {
     return view('app.signup');
 })->name("sign-up");
 
+Route::get('/stripe/delete-account', [StripeOnboardingController::class, 'deleteAccount'])
+    ->name('stripe.delete-account');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/stripe/onboarding', [StripeOnboardingController::class, 'initiateOnboarding'])->name('stripe.onboarding');
     Route::get('/stripe/onboarding/complete', [StripeOnboardingController::class, 'completeOnboarding'])->name('stripe.onboarding.complete');

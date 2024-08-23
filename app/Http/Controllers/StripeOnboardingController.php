@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 use Stripe\Account;
 use Stripe\AccountLink;
@@ -19,6 +20,18 @@ class StripeOnboardingController extends Controller
             $account = Account::create([
                 'type' => 'express',
                 'email' => $user->email,
+                'capabilities' => [
+                    'card_payments' => ['requested' => true],
+                    'transfers' => ['requested' => true],
+                ],
+                'business_type' => 'individual', 
+                'business_profile' => [
+                    'mcc' => null,
+                    'url' => null, 
+                ],
+                'individual' => [
+                    'email' => $user->email, 
+                ],
             ]);
 
             $user->stripe_account_id = $account->id;
@@ -31,17 +44,42 @@ class StripeOnboardingController extends Controller
             'refresh_url' => route('stripe.onboarding'),
             'return_url' => route('stripe.onboarding.complete'),
             'type' => 'account_onboarding',
+            'collect' => 'currently_due',
+           
         ]);
 
         return redirect($accountLink->url);
     }
-
     public function completeOnboarding(Request $request)
     {
         $user = $request->user();
-        $user->stripe_onboarding_status = 'completed';
-        $user->save();
+        
+        Stripe::setApiKey(env('STRIPE_SK'));
+        $account = Account::retrieve($user->stripe_account_id);
+        
+        if ($account->details_submitted && $account->payouts_enabled && $account->charges_enabled) {
+            $user->stripe_onboarding_status = 'completed';
+            $user->save();
+            return redirect()->route('dashboard')->with('success', 'Stripe onboarding completed successfully!');
+        } else {
+            return redirect()->route('stripe.onboarding')->with('error', 'Onboarding not completed. Please try again.');
+        }
+    }
 
-        return redirect()->route('dashboard');
+    public function deleteAccount(Request $request)
+    {
+        Stripe::setApiKey(env('STRIPE_SK'));
+
+     
+        try {
+            $account = Account::retrieve("acct_1PqwEdGfqnimjlz8");
+            $account->delete();
+
+          
+            return response()->json(['message' => 'Stripe account deleted successfully.'], 200);
+        } catch (\Exception $e) {
+            Log::error('Error deleting Stripe account: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to delete Stripe account.'], 500);
+        }
     }
 }
