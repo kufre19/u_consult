@@ -19,7 +19,6 @@ trait StripeDataTrait
         $this->setStripeKey();
         $invoices = Invoice::all([
             'limit' => 100, // Adjust as needed
-            'status' => 'paid', // or any other status you want to fetch
         ], ['stripe_account' => $connectedAccountId]);
         
         return $invoices->data;

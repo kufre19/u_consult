@@ -17,15 +17,26 @@ class DashboardDataController extends Controller
         $invoices = $this->getConnectedAccountInvoices(Auth::user()->stripe_account_id);
 
         return DataTables::of($invoices)
+            ->addColumn('id', function ($invoice) {
+                return $invoice->id;
+            })
             ->addColumn('client_name', function ($invoice) {
                 return $invoice->customer_name;
             })
             ->addColumn('status', function ($invoice) {
                 return ucfirst($invoice->status);
             })
+            ->addColumn('amount', function ($invoice) {
+                return number_format($invoice->amount_due,2);
+            })
             ->addColumn('invoice_url', function ($invoice) {
                 return '<a href="' . $invoice->hosted_invoice_url . '" class="btn btn-sm btn-primary" target="_blank">View</a>';
             })
+
+            ->addColumn('created_at', function ($invoice) {
+                return Date("d-m-y",$invoice->created);
+            })
+
             ->rawColumns(['invoice_url'])
             ->make(true);
     }
