@@ -28,7 +28,7 @@
 
 
                <li>
-                   <a href="{{route('invoice.list')}}">
+                   <a href="{{route('invoices.list')}}">
                        <div class="parent-icon"><i class="material-icons-outlined">shopping_bag</i>
                        </div>
                        <div class="menu-title">My Invoices</div>
@@ -38,7 +38,7 @@
                <li class="menu-label">Transactions</li>
 
                <li>
-                   <a href="{{route('transaction.list')}}">
+                   <a href="{{route('transactions.list')}}">
                        <div class="parent-icon"><i class="material-icons-outlined">receipt_long</i>
                        </div>
                        <div class="menu-title">Transactions Hisory</div>

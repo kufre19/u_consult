@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DashboardDataController;
 use App\Http\Controllers\StripeOnboardingController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -54,12 +55,8 @@ Route::middleware(['auth', 'verified', 'stripe.onboarding'])->prefix("dashboard"
     // Route::get('/complete-onboarding ', function () {
     //     return view('app.complete-registration');
     // });
-
-    Route::get('/transaction/list ', function () {
-        return view('app.transaction-list');
-    })->name("transaction.list");
-
-    Route::get('/invoice/list', function () {
-        return view('app.invoices');
-    })->name("invoice.list");
+    Route::get('/invoices', [DashboardDataController::class, 'invoicesList'])->name('invoices.list');
+    Route::get('/transactions', [DashboardDataController::class, 'transactionsList'])->name('transactions.list');
+    Route::get('/get-invoices', [DashboardDataController::class, 'getInvoices'])->name('get.invoices');
+    Route::get('/get-transactions', [DashboardDataController::class, 'getTransactions'])->name('get.transactions');
 });
