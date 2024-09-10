@@ -3,25 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Invoice;
-use App\Models\Transaction;
+use App\Traits\StripeDataTrait;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class DashboardDataController extends Controller
 {
+    use StripeDataTrait;
+
+
     public function getInvoices(Request $request)
     {
-        $invoices = Invoice::where('user_id', $request->user()->id);
+        $invoices = $this->getConnectedAccountInvoices(Auth::user()->stripe_account_id);
 
         return DataTables::of($invoices)
             ->addColumn('client_name', function ($invoice) {
-                return $invoice->client->name;
+                return $invoice->customer_name;
             })
             ->addColumn('status', function ($invoice) {
                 return ucfirst($invoice->status);
             })
             ->addColumn('invoice_url', function ($invoice) {
-                return '<a href="' . route('invoice.show', $invoice->id) . '" class="btn btn-sm btn-primary">View</a>';
+                return '<a href="' . $invoice->hosted_invoice_url . '" class="btn btn-sm btn-primary" target="_blank">View</a>';
             })
             ->rawColumns(['invoice_url'])
             ->make(true);
@@ -29,11 +32,11 @@ class DashboardDataController extends Controller
 
     public function getTransactions(Request $request)
     {
-        $transactions = Transaction::where('user_id', $request->user()->id);
+        $transactions = $this->getConnectedAccountTransactions(Auth::user()->stripe_account_id);
 
         return DataTables::of($transactions)
             ->addColumn('type', function ($transaction) {
-                return ucfirst($transaction->type);
+                return $transaction->object;
             })
             ->addColumn('status', function ($transaction) {
                 return ucfirst($transaction->status);
@@ -41,13 +44,31 @@ class DashboardDataController extends Controller
             ->make(true);
     }
 
+    public function getClients(Request $request)
+    {
+        $clients = $this->getConnectedAccountCustomers(Auth::user()->stripe_account_id);
+
+        return DataTables::of($clients)
+            ->addColumn('name', function ($client) {
+                return $client->name;
+            })
+            ->addColumn('email', function ($client) {
+                return $client->email;
+            })
+            ->addColumn('actions', function ($client) {
+                return '<a href="' . route('clients.show', $client->id) . '" class="btn btn-sm btn-primary">View</a>';
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
+
     public function invoicesList()
     {
-        return view('invoices.list');
+        return view('app.invoices');
     }
 
     public function transactionsList()
     {
-        return view('transactions.list');
+        return view('app.transaction-list');
     }
 }
