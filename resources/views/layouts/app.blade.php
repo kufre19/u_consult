@@ -31,11 +31,42 @@
     <link href="{{ asset('sass/responsive.css') }}" rel="stylesheet">
     @stack('extra-style')
 
+    <style>
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
 </head>
 
 <body>
 
-
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
 
     {{-- dashboard header starts --}}
     @extends('layouts.dashboard-header')
@@ -58,7 +89,26 @@
     <!--end footer-->
 
 
+    <script>
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            const iconLink = document.querySelector('link[href*="Material+Icons+Outlined"]');
 
+            if (iconLink) {
+                iconLink.addEventListener('load', function() {
+                    preloader.style.display = 'none';
+                });
+
+                // Fallback: hide preloader after 5 seconds if icons don't load
+                setTimeout(function() {
+                    preloader.style.display = 'none';
+                }, 5000);
+            } else {
+                // If icon link is not found, hide preloader immediately
+                preloader.style.display = 'none';
+            }
+        });
+    </script>
     <!--bootstrap js-->
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
 
