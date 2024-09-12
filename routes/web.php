@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardDataController;
+use App\Http\Controllers\StripeController;
 use App\Http\Controllers\StripeOnboardingController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -40,12 +41,11 @@ Route::get('/stripe/delete-account', [StripeOnboardingController::class, 'delete
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/stripe/onboarding', [StripeOnboardingController::class, 'initiateOnboarding'])->name('stripe.onboarding');
     Route::get('/stripe/onboarding/complete', [StripeOnboardingController::class, 'completeOnboarding'])->name('stripe.onboarding.complete');
-    
 });
 
 Route::middleware(['auth', 'verified', 'stripe.onboarding'])->prefix("dashboard")->group(function () {
 
-  
+
 
     Route::get('/', function () {
         return view('app.dashboard');
@@ -58,5 +58,8 @@ Route::middleware(['auth', 'verified', 'stripe.onboarding'])->prefix("dashboard"
     Route::get('/invoices', [DashboardDataController::class, 'invoicesList'])->name('invoices.list');
     Route::get('/transactions', [DashboardDataController::class, 'transactionsList'])->name('transactions.list');
     Route::get('/get-invoices', [DashboardDataController::class, 'getInvoices'])->name('get.invoices');
+
+    Route::get('/stripe/customers', [StripeController::class, 'getCustomers']);
+    Route::post('/stripe/create-invoice', [StripeController::class, 'createInvoice']);
     Route::get('/get-transactions', [DashboardDataController::class, 'getTransactions'])->name('get.transactions');
 });

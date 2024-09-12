@@ -6,6 +6,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ env('APP_NAME') }}</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!--favicon-->
     <link rel="icon" href="{{ asset('assets/images/favicon-32x32.png') }}" type="image/png">
 
@@ -124,6 +126,8 @@
     </script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard1.js') }}"></script>
+    <script src="{{ asset('assets/js/invoice-scripts.js') }}"></script>
+
     {{-- <script>
         new PerfectScrollbar(".user-list")
     </script> --}}

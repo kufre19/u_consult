@@ -176,7 +176,7 @@
 }
 
 .bg-grd-info {
-	background-image: linear-gradient(310deg, #00c6fb 0%, #005bea 100%) !important;
+	background-image: linear-gradient(310deg, #003366 100%, #0066FF 100%) !important;
 }
 
 .bg-grd-warning {
@@ -223,7 +223,7 @@
 
 .btn-grd-primary {
 	
-	background-image: linear-gradient(310deg,#7928ca,#ff0080) !important;
+	background-image: linear-gradient(310deg,#99CC00,#99CC00) !important;
 }
 
 .btn-grd-success {

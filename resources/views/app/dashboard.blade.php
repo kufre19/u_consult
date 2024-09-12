@@ -37,7 +37,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example" class="table table-striped table-bordered" style="width:100%">
+                            <table id="invoicesTable" class="table table-striped table-bordered" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Invoice ID</th>
@@ -48,23 +48,9 @@
                                         <th>Created On</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-
-
-
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>Invoice ID</th>
-                                        <th>Client Name</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Invoice Url</th>
-                                        <th>Created On</th>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
+                   
                     </div>
                 </div>
             </div>
@@ -74,3 +60,25 @@
 @endsection
 
 @include('components.create-invoice-modal')
+
+@push('extra-js')
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#invoicesTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('get.invoices') }}",
+            columns: [
+                {data: 'id', name: 'id'},
+                {data: 'client_name', name: 'client_name'},
+                {data: 'amount', name: 'amount'},
+                {data: 'status', name: 'status'},
+                {data: 'invoice_url', name: 'invoice_url', orderable: false, searchable: false},
+                {data: 'created_at', name: 'created_at'}
+            ]
+        });
+    });
+</script>
+@endpush
