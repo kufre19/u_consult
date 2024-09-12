@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Populate client dropdown from Stripe
     function populateClientDropdown() {
 
-        fetch('/api/stripe/customers', {
+        fetch('/dashboard/stripe/customers', {
             method: 'GET',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             const clientSelect = document.getElementById('clientSelect');
             clientSelect.innerHTML = '<option value="">Choose...</option>'; // Reset options
+            console.log(data);
             data.forEach(customer => {
                 const option = document.createElement('option');
                 option.value = customer.id;
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         const formData = new FormData(this);
         
-        fetch('/api/stripe/create-invoice', {
+        fetch('/dashboard/stripe/create-invoice', {
             method: 'POST',
             body: formData,
             headers: {
