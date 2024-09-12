@@ -21,7 +21,6 @@ class StripeOnboardingController extends Controller
                 'type' => 'express',
                 'email' => $user->email,
                 'country' => $user->country, // Use the user's country
-                
                 'business_type' => 'individual', // Pre-set business type
                 'business_profile' => [
                     'mcc' => '5734', // Computer Software Stores (adjust as needed)
@@ -30,6 +29,9 @@ class StripeOnboardingController extends Controller
                 'individual' => [
                     'email' => $user->email, // Use existing email
                 ],
+                'tos_acceptance' => [
+                'service_agreement' => 'recipient',
+            ],
             ]);
 
             $user->stripe_account_id = $account->id;
