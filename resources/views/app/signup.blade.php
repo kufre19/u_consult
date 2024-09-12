@@ -84,6 +84,16 @@
                       <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
               </div>
+
+              <div class="col-12">
+                <label for="inputCountry" class="form-label">Country</label>
+                <select class="form-select @error('country') is-invalid @enderror" id="inputCountry" name="country" required>
+                    <option value="">Select your country</option>
+                </select>
+                @error('country')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
               
               <div class="col-12">
                   <label for="password" class="form-label">Password</label>
@@ -161,6 +171,24 @@
         }
       });
     });
+  </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      fetch('https://restcountries.com/v3.1/all?fields=name,cca2')
+          .then(response => response.json())
+          .then(data => {
+              const countrySelect = document.getElementById('inputCountry');
+              data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+              data.forEach(country => {
+                  const option = document.createElement('option');
+                  option.value = country.cca2;
+                  option.textContent = country.name.common;
+                  countrySelect.appendChild(option);
+              });
+          })
+          .catch(error => console.error('Error fetching countries:', error));
+  });
   </script>
 
 </body>

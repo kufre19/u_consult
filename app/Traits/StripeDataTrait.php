@@ -43,4 +43,6 @@ trait StripeDataTrait
         
         return $customers->data;
     }
+
+    
 }

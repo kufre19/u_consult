@@ -34,7 +34,7 @@ class DashboardDataController extends Controller
             })
 
             ->addColumn('created_at', function ($invoice) {
-                return Date("d-m-y",$invoice->created);
+                return Date("d-M-Y",$invoice->created);
             })
 
             ->rawColumns(['invoice_url'])

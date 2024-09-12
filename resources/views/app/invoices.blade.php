@@ -16,7 +16,7 @@
                     </nav>
                 </div>
                 <div class="ms-auto">
-                    <div class="btn-group">
+                    <div class="btn-group"  data-bs-toggle="modal" data-bs-target="#createInvoiceModal">
                         <button type="button" class="btn btn-outline-primary">New Invoice</button>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
         </div>
     </main>
 @endsection
-
+@include('components.create-invoice-modal')
 @push('extra-js')
 <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>

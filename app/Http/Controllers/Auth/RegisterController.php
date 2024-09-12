@@ -61,6 +61,9 @@ class RegisterController extends Controller
             'password.required' => 'Please enter a password.',
             'password.min' => 'Your password must be at least 8 characters long.',
             'password.confirmed' => 'The passwords you entered do not match.',
+            'country.required' => 'Please select your country.',
+
+
         ];
 
         return Validator::make($data, [
@@ -69,6 +72,8 @@ class RegisterController extends Controller
             'other_name' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'country' => ['required', 'string', 'max:2'],
+
         ], $messages);
     }
 
@@ -86,6 +91,8 @@ class RegisterController extends Controller
             'other_name' => $data['other_name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'country' => $data['country'],
+
         ]);
     }
 
