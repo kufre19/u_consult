@@ -25,6 +25,7 @@ class StripeOnboardingController extends Controller
                     'card_payments' => ['requested' => true],
                     'transfers' => ['requested' => true],
                 ],
+                'business_type' => 'individual', // Pre-set business type
                 'business_profile' => [
                     'mcc' => '5734', // Computer Software Stores (adjust as needed)
                     'url' => null, // Omit business URL
