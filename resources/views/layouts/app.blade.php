@@ -95,18 +95,30 @@
         window.addEventListener('load', function() {
             const preloader = document.getElementById('preloader');
             const iconLink = document.querySelector('link[href*="Material+Icons+Outlined"]');
+            const mainStyleLink = document.querySelector('link[href*="main.css"]');
+            const bootstrapStyleLink = document.querySelector('link[href*="bootstrap-extended.css"]');
 
-            if (iconLink) {
-                iconLink.addEventListener('load', function() {
+            let loadedCount = 0;
+            const totalStylesheets = 3; // Number of stylesheets we're waiting for
+
+            function incrementLoadCount() {
+                loadedCount++;
+                if (loadedCount === totalStylesheets) {
                     preloader.style.display = 'none';
-                });
+                }
+            }
 
-                // Fallback: hide preloader after 5 seconds if icons don't load
+            if (iconLink && mainStyleLink && bootstrapStyleLink) {
+                iconLink.addEventListener('load', incrementLoadCount);
+                mainStyleLink.addEventListener('load', incrementLoadCount);
+                bootstrapStyleLink.addEventListener('load', incrementLoadCount);
+
+                // Fallback: hide preloader after 5 seconds if stylesheets don't load
                 setTimeout(function() {
                     preloader.style.display = 'none';
                 }, 5000);
             } else {
-                // If icon link is not found, hide preloader immediately
+                // If any of the stylesheet links are not found, hide preloader immediately
                 preloader.style.display = 'none';
             }
         });

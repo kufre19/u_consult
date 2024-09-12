@@ -27,7 +27,7 @@ class DashboardDataController extends Controller
                 return ucfirst($invoice->status);
             })
             ->addColumn('amount', function ($invoice) {
-                return number_format($invoice->amount_due,2);
+                return number_format(($invoice->amount_due/100),2);
             })
             ->addColumn('invoice_url', function ($invoice) {
                 return '<a href="' . $invoice->hosted_invoice_url . '" class="btn btn-sm btn-primary" target="_blank">View</a>';
