@@ -27,14 +27,14 @@ class DashboardDataController extends Controller
                 return ucfirst($invoice->status);
             })
             ->addColumn('amount', function ($invoice) {
-                return number_format(($invoice->amount_due/100),2);
+                return number_format(($invoice->amount_due / 100), 2);
             })
             ->addColumn('invoice_url', function ($invoice) {
                 return '<a href="' . $invoice->hosted_invoice_url . '" class="btn btn-sm btn-primary" target="_blank">View</a>';
             })
 
             ->addColumn('created_at', function ($invoice) {
-                return Date("d-M-Y",$invoice->created);
+                return Date("d-M-Y", $invoice->created);
             })
 
             ->rawColumns(['invoice_url'])
@@ -46,12 +46,23 @@ class DashboardDataController extends Controller
         $transactions = $this->getConnectedAccountTransactions(Auth::user()->stripe_account_id);
 
         return DataTables::of($transactions)
+            ->addColumn('id', function ($transaction) {
+                return $transaction->id;
+            })
+            ->addColumn('amount', function ($transaction) {
+                return number_format(($transaction->amount / 100), 2);
+            })
+
             ->addColumn('type', function ($transaction) {
                 return $transaction->object;
             })
             ->addColumn('status', function ($transaction) {
                 return ucfirst($transaction->status);
             })
+            ->addColumn('created_at', function ($transaction) {
+                return Date("d-M-Y", $transaction->created);
+            })
+
             ->make(true);
     }
 
@@ -67,7 +78,7 @@ class DashboardDataController extends Controller
                 return $client->email;
             })
             ->addColumn('actions', function ($client) {
-                return '<a href="' . route('clients.show', $client->id) . '" class="btn btn-sm btn-primary">View</a>';
+                return '<a href="' . '' . '" class="btn btn-sm btn-primary">View</a>';
             })
             ->rawColumns(['actions'])
             ->make(true);
@@ -81,5 +92,10 @@ class DashboardDataController extends Controller
     public function transactionsList()
     {
         return view('app.transaction-list');
+    }
+
+    public function clientList()
+    {
+        return view('app.client');
     }
 }

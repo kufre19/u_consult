@@ -57,6 +57,8 @@ Route::middleware(['auth', 'verified', 'stripe.onboarding'])->prefix("dashboard"
     // });
     Route::get('/invoices', [DashboardDataController::class, 'invoicesList'])->name('invoices.list');
     Route::get('/transactions', [DashboardDataController::class, 'transactionsList'])->name('transactions.list');
+    Route::get('/clients', [DashboardDataController::class, 'clientList'])->name('clients.list');
+    Route::get('/get-clients', [DashboardDataController::class, 'getClients'])->name('get.clients');
     Route::get('/get-invoices', [DashboardDataController::class, 'getInvoices'])->name('get.invoices');
 
     Route::get('/stripe/customers', [StripeController::class, 'getCustomers']);

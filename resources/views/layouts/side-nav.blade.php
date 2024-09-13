@@ -49,7 +49,7 @@
                <li class="menu-label">Clients</li>
 
                <li>
-                   <a href="javascript:;">
+                   <a href="#" class="addNewClientBtn">
                        <div class="parent-icon"><i class="material-icons-outlined">group_add</i>
                        </div>
                        <div class="menu-title">Add Client</div>
@@ -58,7 +58,7 @@
                </li>
 
                <li>
-                   <a href="javascript:;">
+                   <a href="{{route('clients.list')}}">
                        <div class="parent-icon"><i class="material-icons-outlined">group</i>
                        </div>
                        <div class="menu-title">My Clients</div>

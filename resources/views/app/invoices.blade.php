@@ -44,8 +44,6 @@
         </div>
     </main>
 @endsection
-@include('components.create-invoice-modal')
-@include('components.create-client-modal')
 
 @push('extra-js')
 <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>

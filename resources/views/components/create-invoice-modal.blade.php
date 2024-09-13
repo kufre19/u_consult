@@ -16,7 +16,7 @@
                             <select id="clientSelect" name="client_id" class="form-select" required>
                                 <option value="">Choose...</option>
                             </select>
-                            <button type="button" class="btn btn-outline-secondary mt-1 btn-sm" id="addNewClientBtn">
+                            <button type="button" class="btn btn-outline-secondary mt-1 btn-sm addNewClientBtn" >
                                 Add New Client
                             </button>
                         </div>

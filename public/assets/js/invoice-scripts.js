@@ -121,6 +121,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (clientSelect) {
                     clientSelect.value = data.customer.id;
                 }
+                if (wasInvoiceModalOpen) {
+                    $('#createInvoiceModal').modal('show');
+                    wasInvoiceModalOpen = false;
+                }
             } else {
                 alert('Error adding client: ' + data.message);
             }
@@ -142,13 +146,14 @@ document.addEventListener('DOMContentLoaded', function() {
         createClientForm.addEventListener('submit', handleClientSubmission);
     }
 
-    const addNewClientBtn = document.getElementById('addNewClientBtn');
-    if (addNewClientBtn) {
-        addNewClientBtn.addEventListener('click', function() {
+    const addNewClientBtns = document.getElementsByClassName('addNewClientBtn');
+    Array.from(addNewClientBtns).forEach(btn => {
+        btn.addEventListener('click', function() {
+            wasInvoiceModalOpen = $('#createInvoiceModal').hasClass('show');
             $('#createInvoiceModal').modal('hide');
             $('#createClientModal').modal('show');
         });
-    }
+    });
 
     // Populate client dropdown when invoice modal is shown
     const createInvoiceModal = document.getElementById('createInvoiceModal');
@@ -156,11 +161,14 @@ document.addEventListener('DOMContentLoaded', function() {
         createInvoiceModal.addEventListener('show.bs.modal', populateClientDropdown);
     }
 
-    // When client modal is hidden, show invoice modal again
-    const createClientModal = document.getElementById('createClientModal');
-    if (createClientModal) {
-        createClientModal.addEventListener('hidden.bs.modal', function() {
-            $('#createInvoiceModal').modal('show');
-        });
-    }
+   // When client modal is hidden, show invoice modal again if it was previously open
+   const createClientModal = document.getElementById('createClientModal');
+   if (createClientModal) {
+       createClientModal.addEventListener('hidden.bs.modal', function() {
+           if (wasInvoiceModalOpen) {
+               $('#createInvoiceModal').modal('show');
+               wasInvoiceModalOpen = false;
+           }
+       });
+   }
 });

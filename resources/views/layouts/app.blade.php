@@ -89,7 +89,8 @@
         <p class="mb-0">Copyright © 2024. All right reserved.</p>
     </footer> --}}
     <!--end footer-->
-
+    @include('components.create-invoice-modal')
+    @include('components.create-client-modal')
 
     <script>
         window.addEventListener('load', function() {
