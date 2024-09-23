@@ -31,6 +31,7 @@
     <link href="{{ asset('sass/semi-dark.css') }}" rel="stylesheet">
     <link href="{{ asset('sass/bordered-theme.css') }}" rel="stylesheet">
     <link href="{{ asset('sass/responsive.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('extra-style')
 
     <style>
@@ -46,12 +47,26 @@
             align-items: center;
             z-index: 9999;
         }
+
+        #preloaderVisibleBg {
+            /* display: none; */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #00000010;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
         
         .spinner {
             width: 40px;
             height: 40px;
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
+            border-top: 4px solid #003366;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -65,8 +80,13 @@
 </head>
 
 <body>
+    {{-- @include('sweetalert::alert') --}}
 
     <div id="preloader">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="preloaderVisibleBg">
         <div class="spinner"></div>
     </div>
 

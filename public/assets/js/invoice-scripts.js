@@ -1,9 +1,11 @@
 // public/js/invoice-scripts.js
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     function getCsrfToken() {
         return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
     }
+
+    const preloaderVisibleBg = document.getElementById('preloaderVisibleBg');
 
     let itemCounter = 0;
 
@@ -35,18 +37,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('addItemBtn').addEventListener('click', addInvoiceItem);
 
-    document.getElementById('invoiceItems').addEventListener('click', function(e) {
+    document.getElementById('invoiceItems').addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-item')) {
             e.target.closest('.invoice-item').remove();
             updateTotalAmount();
         }
     });
 
-    document.getElementById('invoiceItems').addEventListener('input', function(e) {
+    document.getElementById('invoiceItems').addEventListener('input', function (e) {
         if (e.target.classList.contains('item-amount')) {
             updateTotalAmount();
         }
     });
+
+    
 
 
     function populateClientDropdown() {
@@ -57,25 +61,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Accept': 'application/json',
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            const clientSelect = document.getElementById('clientSelect');
-            if (!clientSelect) return;
-            clientSelect.innerHTML = '<option value="">Choose...</option>'; // Reset options
-            data.forEach(customer => {
-                const option = document.createElement('option');
-                option.value = customer.id;
-                option.textContent = customer.name || customer.email || customer.id;
-                clientSelect.appendChild(option);
-            });
-        })
-        .catch(error => console.error('Error fetching Stripe customers:', error));
+            .then(response => response.json())
+            .then(data => {
+                const clientSelect = document.getElementById('clientSelect');
+                if (!clientSelect) return;
+                clientSelect.innerHTML = '<option value="">Choose...</option>'; // Reset options
+                data.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.id;
+                    option.textContent = customer.name || customer.email || customer.id;
+                    clientSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Stripe customers:', error));
     }
 
     function handleInvoiceSubmission(e) {
         e.preventDefault();
         const formData = new FormData(this);
+        preloaderVisibleBg.style.display = 'flex';
         
+
+
         fetch('/dashboard/stripe/create-invoice', {
             method: 'POST',
             body: formData,
@@ -83,26 +90,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-CSRF-TOKEN': getCsrfToken(),
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Invoice created successfully!');
-                $('#createInvoiceModal').modal('hide');
-                // Optionally, refresh the invoice list or update the UI
-            } else {
-                alert('Error creating invoice: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while creating the invoice.');
-        });
+            .then(response => response.json())
+            .then(data => {
+                preloaderVisibleBg.style.display = 'none';
+
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Invoice created successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#createInvoiceModal').modal('hide');
+                            // Optionally, refresh the invoice list or update the UI
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error creating invoice: ' + data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while creating the invoice.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
     }
+
+
 
     function handleClientSubmission(e) {
         e.preventDefault();
+        preloaderVisibleBg.style.display = 'flex';
+
         const formData = new FormData(this);
-        
+
         fetch('/dashboard/stripe/create-customer', {
             method: 'POST',
             body: formData,
@@ -110,29 +141,49 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-CSRF-TOKEN': getCsrfToken(),
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Client added successfully!');
-                $('#createClientModal').modal('hide');
-                populateClientDropdown();
-                // Select the newly created client in the dropdown
-                const clientSelect = document.getElementById('clientSelect');
-                if (clientSelect) {
-                    clientSelect.value = data.customer.id;
+            .then(response => response.json())
+            .then(data => {
+                preloaderVisibleBg.style.display = 'none';
+
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Client added successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#createClientModal').modal('hide');
+                            populateClientDropdown();
+                            // Select the newly created client in the dropdown
+                            const clientSelect = document.getElementById('clientSelect');
+                            if (clientSelect) {
+                                clientSelect.value = data.customer.id;
+                            }
+                            if (wasInvoiceModalOpen) {
+                                $('#createInvoiceModal').modal('show');
+                                wasInvoiceModalOpen = false;
+                            }
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error adding client: ' + data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 }
-                if (wasInvoiceModalOpen) {
-                    $('#createInvoiceModal').modal('show');
-                    wasInvoiceModalOpen = false;
-                }
-            } else {
-                alert('Error adding client: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while adding the client.');
-        });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while adding the client.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
     }
 
     // Attach event listeners
@@ -148,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const addNewClientBtns = document.getElementsByClassName('addNewClientBtn');
     Array.from(addNewClientBtns).forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             wasInvoiceModalOpen = $('#createInvoiceModal').hasClass('show');
             $('#createInvoiceModal').modal('hide');
             $('#createClientModal').modal('show');
@@ -161,14 +212,14 @@ document.addEventListener('DOMContentLoaded', function() {
         createInvoiceModal.addEventListener('show.bs.modal', populateClientDropdown);
     }
 
-   // When client modal is hidden, show invoice modal again if it was previously open
-   const createClientModal = document.getElementById('createClientModal');
-   if (createClientModal) {
-       createClientModal.addEventListener('hidden.bs.modal', function() {
-           if (wasInvoiceModalOpen) {
-               $('#createInvoiceModal').modal('show');
-               wasInvoiceModalOpen = false;
-           }
-       });
-   }
+    // When client modal is hidden, show invoice modal again if it was previously open
+    const createClientModal = document.getElementById('createClientModal');
+    if (createClientModal) {
+        createClientModal.addEventListener('hidden.bs.modal', function () {
+            if (wasInvoiceModalOpen) {
+                $('#createInvoiceModal').modal('show');
+                wasInvoiceModalOpen = false;
+            }
+        });
+    }
 });
