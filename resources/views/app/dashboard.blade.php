@@ -59,7 +59,7 @@
     </main>
 @endsection
 
-@include('components.create-invoice-modal')
+{{-- @include('components.create-invoice-modal') --}}
 {{-- @include('components.create-client-modal') --}}
 
 @push('extra-js')
