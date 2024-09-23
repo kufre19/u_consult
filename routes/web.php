@@ -35,6 +35,7 @@ Route::get('/sign-up', function () {
     return view('app.signup');
 })->name("sign-up");
 
+Auth::routes();
 Route::get('/stripe/delete-account', [StripeOnboardingController::class, 'deleteAccount'])
     ->name('stripe.delete-account');
 
