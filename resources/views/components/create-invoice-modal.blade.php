@@ -47,7 +47,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-grd-primary">Create Invoice</button>
+                                <button type="submit" class="btn btn-grd-primary text-white">Create Invoice</button>
                             </div>
                         </div>
                     </form>
