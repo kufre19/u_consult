@@ -167,7 +167,7 @@
                                     </div>
                                     <div class="col-12">
                                         <div class="d-grid gap-2">
-                                            <button type="submit" class="btn btn-grd-branding">Change
+                                            <button type="submit" class="btn btn-grd-primary">Change
                                                 Password</button>
                                             <a href="{{ route('sign-in') }}" class="btn btn-grd-royal">Back to
                                                 Login</a>

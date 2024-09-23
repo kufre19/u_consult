@@ -80,7 +80,7 @@
                                     </div>
                                     <div class="col-12">
                                         <div class="d-grid gap-2">
-                                            <button type="submit" class="btn btn-grd-info">Send</button>
+                                            <button type="submit" class="btn btn-grd-primary">Send</button>
                                             <a href="{{ route('sign-in') }}" class="btn btn-light">Back to Login</a>
                                         </div>
                                     </div>
