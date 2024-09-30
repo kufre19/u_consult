@@ -89,7 +89,7 @@ trait StripeDataTrait
             $validatedData = $request->validate([
                 'name' => 'required|string',
                 'email' => 'required|email',
-                'phone' => 'nullable|string',
+                // 'phone' => 'nullable|string',
             ]);
 
             $connectedAccountId = $request->user()->stripe_account_id;
@@ -97,7 +97,7 @@ trait StripeDataTrait
             $customer = Customer::create([
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
-                'phone' => $validatedData['phone'],
+                // 'phone' => $validatedData['phone'],
             ], ['stripe_account' => $connectedAccountId]);
 
             return response()->json(['success' => true, 'customer' => $customer]);

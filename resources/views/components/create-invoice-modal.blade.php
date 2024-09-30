@@ -1,3 +1,5 @@
+@if (auth()->user()->hasCompletedStripeOnboarding())
+
 <div class="modal fade" id="createInvoiceModal" tabindex="-1" aria-labelledby="createInvoiceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -56,3 +58,4 @@
         </div>
     </div>
 </div>
+@endif

@@ -15,7 +15,7 @@
            <!--navigation-->
            <ul class="metismenu" id="sidenav">
                <li>
-                   <a href="{{route('dashboard')}}">
+                   <a href="{{ route('dashboard') }}">
                        <div class="parent-icon"><i class="material-icons-outlined">home</i>
                        </div>
                        <div class="menu-title">Dashboard</div>
@@ -28,7 +28,7 @@
 
 
                <li>
-                   <a href="{{route('invoices.list')}}">
+                   <a href="{{ route('invoices.list') }}">
                        <div class="parent-icon"><i class="material-icons-outlined">shopping_bag</i>
                        </div>
                        <div class="menu-title">My Invoices</div>
@@ -38,7 +38,7 @@
                <li class="menu-label">Transactions</li>
 
                <li>
-                   <a href="{{route('transactions.list')}}">
+                   <a href="{{ route('transactions.list') }}">
                        <div class="parent-icon"><i class="material-icons-outlined">receipt_long</i>
                        </div>
                        <div class="menu-title">Transactions Hisory</div>
@@ -49,16 +49,17 @@
                <li class="menu-label">Clients</li>
 
                <li>
-                   <a href="#" class="addNewClientBtn">
-                       <div class="parent-icon"><i class="material-icons-outlined">group_add</i>
-                       </div>
-                       <div class="menu-title">Add Client</div>
-                   </a>
-
+                   @if (auth()->user()->hasCompletedStripeOnboarding())
+                       <a href="#" class="addNewClientBtn">
+                           <div class="parent-icon"><i class="material-icons-outlined">group_add</i>
+                           </div>
+                           <div class="menu-title">Add Client</div>
+                       </a>
+                   @endif
                </li>
 
                <li>
-                   <a href="{{route('clients.list')}}">
+                   <a href="{{ route('clients.list') }}">
                        <div class="parent-icon"><i class="material-icons-outlined">group</i>
                        </div>
                        <div class="menu-title">My Clients</div>

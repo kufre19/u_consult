@@ -4,21 +4,24 @@
     <main class="main-wrapper">
         <div class="main-content">
             <!--breadcrumb-->
-            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-                <div class="breadcrumb-title pe-3">Invoices</div>
-                <div class="ps-3">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0 p-0">
-                            <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">Invoices List</li>
-                        </ol>
-                    </nav>
-                </div>
-                <div class="ms-auto">
-                    <div class="btn-group"  data-bs-toggle="modal" data-bs-target="#createInvoiceModal">
-                        <button type="button" class="btn btn-outline-primary">New Invoice</button>
+            <div class="page-breadcrumb d-flex flex-column flex-md-row align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center mb-3 mb-md-0">
+                    <div class="breadcrumb-title pe-3">Invoices</div>
+                    <div class="ps-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 p-0">
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Invoice List</li>
+                            </ol>
+                        </nav>
                     </div>
+                </div>
+                <div class="action-button">
+                    @if(auth()->user()->hasCompletedStripeOnboarding())
+                        <button type="button" class="btn btn-outline-primary"  data-bs-toggle="modal" data-bs-target="#createInvoiceModal">New Invoice</button>
+                    @else
+                        <a href="{{ route('stripe.onboarding') }}" class="btn btn-outline-primary">Verify Account</a>
+                    @endif
                 </div>
             </div>
             <!--end breadcrumb-->
