@@ -63,13 +63,14 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(response => response.json())
             .then(data => {
+                console.log(data);
                 const clientSelect = document.getElementById('clientSelect');
                 if (!clientSelect) return;
                 clientSelect.innerHTML = '<option value="">Choose...</option>'; // Reset options
-                data.forEach(customer => {
+                data.forEach(client => {
                     const option = document.createElement('option');
-                    option.value = customer.id;
-                    option.textContent = customer.name || customer.email || customer.id;
+                    option.value = client.stripe_customer_id;
+                    option.textContent = client.name || client.email;
                     clientSelect.appendChild(option);
                 });
             })

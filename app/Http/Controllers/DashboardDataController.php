@@ -14,29 +14,27 @@ class DashboardDataController extends Controller
 
     public function getInvoices(Request $request)
     {
-        $invoices = $this->getConnectedAccountInvoices(Auth::user()->stripe_account_id);
+        $invoices = $request->user()->invoices()->orderBy('created_at', 'desc')->get();
 
         return DataTables::of($invoices)
             ->addColumn('id', function ($invoice) {
-                return $invoice->id;
+                return $invoice->stripe_invoice_id;
             })
             ->addColumn('client_name', function ($invoice) {
-                return $invoice->customer_name;
+                return $invoice->client_name;
             })
             ->addColumn('status', function ($invoice) {
                 return ucfirst($invoice->status);
             })
             ->addColumn('amount', function ($invoice) {
-                return number_format(($invoice->amount_due / 100), 2);
+                return number_format($invoice->amount, 2);
             })
             ->addColumn('invoice_url', function ($invoice) {
-                return '<a href="' . $invoice->hosted_invoice_url . '" class="btn btn-sm btn-primary" target="_blank">View</a>';
+                return '<a href="' . $invoice->invoice_url . '" class="btn btn-sm btn-primary" target="_blank">View</a>';
             })
-
             ->addColumn('created_at', function ($invoice) {
-                return Date("d-M-Y", $invoice->created);
+                return $invoice->stripe_created_at->format('d-M-Y');
             })
-
             ->rawColumns(['invoice_url'])
             ->make(true);
     }
@@ -66,23 +64,7 @@ class DashboardDataController extends Controller
             ->make(true);
     }
 
-    public function getClients(Request $request)
-    {
-        $clients = $this->getConnectedAccountCustomers(Auth::user()->stripe_account_id);
-
-        return DataTables::of($clients)
-            ->addColumn('name', function ($client) {
-                return $client->name;
-            })
-            ->addColumn('email', function ($client) {
-                return $client->email;
-            })
-            ->addColumn('actions', function ($client) {
-                return '<a href="' . '' . '" class="btn btn-sm btn-primary">View</a>';
-            })
-            ->rawColumns(['actions'])
-            ->make(true);
-    }
+   
 
     public function invoicesList()
     {

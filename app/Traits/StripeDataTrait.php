@@ -9,7 +9,7 @@ use Stripe\Charge;
 use Stripe\Customer;
 use Stripe\InvoiceItem;
 use Carbon\Carbon;
-
+use Yajra\DataTables\Facades\DataTables;
 
 trait StripeDataTrait
 {
@@ -39,8 +39,31 @@ trait StripeDataTrait
     }
 
 
+    public function getConnectedAccountCustomers (Request $request)
+    {
+        $clients = $request->user()->clients;
+        return response()->json($clients);
+    }
 
-    public function getConnectedAccountCustomers($connectedAccountId)
+    public function getClients(Request $request)
+    {
+        $clients = $request->user()->clients;
+
+        return DataTables::of($clients)
+            ->addColumn('name', function ($client) {
+                return $client->name;
+            })
+            ->addColumn('email', function ($client) {
+                return $client->email;
+            })
+            ->addColumn('actions', function ($client) {
+                return '<a href="' . ''. '" class="btn btn-sm btn-primary">View</a>';
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
+
+    public function getCustomers($connectedAccountId)
     {
         $this->setStripeKey();
         $customers = Customer::all([
@@ -94,13 +117,21 @@ trait StripeDataTrait
 
             $connectedAccountId = $request->user()->stripe_account_id;
 
-            $customer = Customer::create([
+            $stripeCustomer = Customer::create([
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
                 // 'phone' => $validatedData['phone'],
-            ], ['stripe_account' => $connectedAccountId]);
+            ]);
 
-            return response()->json(['success' => true, 'customer' => $customer]);
+            $client = $request->user()->clients()->create([
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                // 'phone' => $validatedData['phone'],
+                'stripe_customer_id' => $stripeCustomer->id,
+            ]);
+
+
+            return response()->json(['success' => true, 'client' => $client]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -129,7 +160,12 @@ trait StripeDataTrait
                 'due_date' => Carbon::parse($validatedData['due_date'])->timestamp,
                 'auto_advance' => false, // Set to false so we can add items before finalizing
                 'currency' => $validatedData['currency'],
-            ], ['stripe_account' => $connectedAccountId]);
+                // 'on_behalf_of'=> $connectedAccountId,
+                'transfer_data' => [
+                    'destination' => $connectedAccountId,
+                  ],
+               
+            ]);
 
             // Calculate total amount
             $totalAmount = 0;
@@ -145,20 +181,35 @@ trait StripeDataTrait
                     'amount' => $amount,
                     'currency' => $validatedData['currency'],
                     'description' => $item['description'],
-                ], ['stripe_account' => $connectedAccountId]);
+                ]);
             }
 
             // Update invoice with total amount
             $invoice = Invoice::update($invoice->id, [
                 'auto_advance' => true,
-            ], ['stripe_account' => $connectedAccountId]);
+            ]);
 
             // Finalize and send the invoice
             $invoice->finalizeInvoice();
             $invoice->sendInvoice();
 
+             // Retrieve the customer name
+        $customer = \Stripe\Customer::retrieve($validatedData['client_id']);
 
-            return response()->json(['success' => true, 'invoice' => $invoice]);
+        // Store the invoice in your database
+        $new_invoice = $request->user()->invoices()->create([
+            'stripe_invoice_id' => $invoice->id,
+            'client_name' => $customer->name ?? $customer->email,
+            'status' => $invoice->status,
+            'amount' => $invoice->total / 100, // Convert cents to dollars
+            'currency' => $invoice->currency,
+            'invoice_url' => $invoice->hosted_invoice_url,
+            'stripe_created_at' => Carbon::createFromTimestamp($invoice->created),
+            'due_date' => Carbon::parse($validatedData['due_date']),
+        ]);
+
+
+            return response()->json(['success' => true, 'invoice' => $new_invoice]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
