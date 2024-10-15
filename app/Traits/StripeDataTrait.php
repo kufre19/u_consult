@@ -164,6 +164,13 @@ trait StripeDataTrait
                 'transfer_data' => [
                     'destination' => $connectedAccountId,
                   ],
+
+                'custom_fields' => [
+                    [
+                        "name"=>"Sent By",
+                        "value"=>"{$request->user()->first_name} {$request->user()->last_name}",
+                    ]
+                ],
                
             ]);
 
@@ -187,7 +194,10 @@ trait StripeDataTrait
             // Update invoice with total amount
             $invoice = Invoice::update($invoice->id, [
                 'auto_advance' => true,
+                
             ]);
+
+          
 
             // Finalize and send the invoice
             $invoice->finalizeInvoice();
