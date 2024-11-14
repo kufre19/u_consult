@@ -1,148 +1,199 @@
-<!doctype html>
-<html lang="en" data-bs-theme="blue-theme">
-
-
+{{-- sign-in.blade.php --}}
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ env('APP_NAME') }}</title>
-    <!--favicon-->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    {{-- Preserve your existing favicon --}}
     <link rel="icon" href="{{ asset('assets/images/favicon-32x32.png') }}" type="image/png">
-    <!-- loader-->
-    <link href="assets/css/pace.min.css" rel="stylesheet">
-    <script src="assets/js/pace.min.js"></script>
-
-    <!--plugins-->
-    <link href="{{ asset('assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/metismenu/metisMenu.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/metismenu/mm-vertical.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/simplebar/css/simplebar.css') }}">
-
-    <!--bootstrap css-->
+    
+    {{-- Bootstrap CSS --}}
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css') }}"
-        rel="stylesheet">
-    <link
-        href="{{ asset('assets/fonts.googleapis.com/css2ab59.css?family=Noto+Sans:wght@300;400;500;600&amp;display=swap') }}"
-        rel="stylesheet">
-    <link href="{{ asset('assets/fonts.googleapis.com/cssf511.css?family=Material+Icons+Outlined') }}" rel="stylesheet">
-    <!--main css-->
-    <link href="{{ asset('assets/css/bootstrap-extended.css') }}" rel="stylesheet">
-    <link href="{{ asset('sass/main.css') }}" rel="stylesheet">
-    <link href="{{ asset('sass/dark-theme.css') }}" rel="stylesheet">
-    <link href="{{ asset('sass/blue-theme.css') }}" rel="stylesheet">
-    <link href="{{ asset('sass/semi-dark.css') }}" rel="stylesheet">
-    <link href="{{ asset('sass/bordered-theme.css') }}" rel="stylesheet">
-    <link href="{{ asset('sass/responsive.css') }}" rel="stylesheet">
+    
+    {{-- Custom Auth Styles --}}
+    <style>
+        :root {
+            --primary-blue: #0066FF;
+            --input-bg: #F5F5F5;
+            --text-muted: #6C757D;
+        }
+        
+        body {
+            background-color: #FAFAFA;
+            min-height: 100vh;
+            font-family: 'Noto Sans', sans-serif;
+        }
+        
+        .auth-container {
+            max-width: 460px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        
+        .brand-logo {
+            margin-bottom: 2rem;
+        }
+        
+        .brand-logo img {
+            height: 40px;
+            width: auto;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        
+        .form-control {
+            background: var(--input-bg);
+            border: none;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .form-control:focus {
+            background: var(--input-bg);
+            box-shadow: 0 0 0 2px var(--primary-blue);
+        }
+        
+        .password-field {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            border: none;
+            padding: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background: #0052CC;
+        }
+        
+        .auth-links {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .auth-links a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .is-invalid {
+            border-color: #dc3545;
+            padding-right: calc(1.5em + 0.75rem);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+    </style>
 </head>
-
 <body>
-
     @include('sweetalert::alert')
-
-    <!--authentication-->
-
-    <div class="mx-3 mx-lg-0">
-
-        <div class="card my-5 col-xl-9 col-xxl-8 mx-auto rounded-4 overflow-hidden p-4">
-            <div class="row g-4">
-                <div class="col-lg-6 d-flex">
-                    <div class="card-body">
-                        <img src="{{ asset('assets/images/logo1.png') }}" class="mb-4" width="145" alt="">
-                        <h4 class="fw-bold">Get Started Now</h4>
-                        <p class="mb-0">Enter your credentials to login your account</p>
-
-
-                        <div class="form-body mt-4">
-                            <form class="row g-3" method="POST" action="{{ route('login') }}">
-                                @csrf
-                                <div class="col-12">
-                                    <label for="inputEmailAddress" class="form-label">Email</label>
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        id="inputEmailAddress" name="email" placeholder="jhon@example.com"
-                                        value="{{ old('email') }}" required autocomplete="email" autofocus>
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <label for="inputChoosePassword" class="form-label">Password</label>
-                                    <div class="input-group @error('password') is-invalid @enderror"
-                                        id="show_hide_password">
-                                        <input type="password" class="form-control border-end-0"
-                                            id="inputChoosePassword" name="password" placeholder="Enter Password"
-                                            required autocomplete="current-password">
-                                        <a href="javascript:;" class="input-group-text bg-transparent"><i
-                                                class="bi bi-eye-slash-fill"></i></a>
-                                    </div>
-                                    @error('password')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6">
-                                    {{-- <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                      <label class="form-check-label" for="flexSwitchCheckChecked">Remember Me</label>
-                  </div> --}}
-                                </div>
-                                <div class="col-md-6 text-end">
-                                    <a href="{{ route('password.request') }}">Forgot Password ?</a>
-                                </div>
-                                <div class="col-12">
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-grd-primary">Login</button>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="text-start">
-                                        <p class="mb-0">Don't have an account yet? <a
-                                                href="{{ route('sign-up') }}">Sign up here</a></p>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 d-lg-flex d-none">
-                    <div class="p-3 rounded-4 w-100 d-flex align-items-center justify-content-center bg-grd-primary">
-                        <img src="{{ asset('assets/images/auth/login1.png') }}" class="img-fluid" alt="">
-                    </div>
-                </div>
-
-            </div><!--end row-->
+    
+    <div class="auth-container">
+        <div class="brand-logo">
+            <img src="{{ asset('assets/images/logo1.png') }}" alt="Logo">
         </div>
-
+        
+        <div class="auth-card">
+            <h1 class="auth-title">Sign in to U-consult</h1>
+            <p class="auth-subtitle">Fill out the form below to generate a professional invoice</p>
+            
+            <form method="POST" action="{{ route('login') }}" class="needs-validation">
+                @csrf
+                
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" 
+                           class="form-control @error('email') is-invalid @enderror" 
+                           id="email" 
+                           name="email" 
+                           value="{{ old('email') }}"
+                           placeholder="Enter email address" 
+                           required>
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="password-field">
+                        <input type="password" 
+                               class="form-control @error('password') is-invalid @enderror" 
+                               id="password" 
+                               name="password"
+                               placeholder="Enter password" 
+                               required>
+                        <button type="button" class="password-toggle">
+                            <i class="bi bi-eye-slash-fill"></i>
+                        </button>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                
+                <div class="mb-4 text-end">
+                    <a href="{{ route('password.request') }}" class="auth-links">Forgot Password?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100">Sign in</button>
+                
+                <div class="auth-links text-center">
+                    Don't have an account yet? <a href="{{ route('sign-up') }}">Sign up here</a>
+                </div>
+            </form>
+        </div>
     </div>
-
-
-
-
-    <!--authentication-->
-
-
-
-
-    <!--plugins-->
-    <script src="assets/js/jquery.min.js"></script>
-
+    
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script>
         $(document).ready(function() {
-            $("#show_hide_password a").on('click', function(event) {
-                event.preventDefault();
-                if ($('#show_hide_password input').attr("type") == "text") {
-                    $('#show_hide_password input').attr('type', 'password');
-                    $('#show_hide_password i').addClass("bi-eye-slash-fill");
-                    $('#show_hide_password i').removeClass("bi-eye-fill");
-                } else if ($('#show_hide_password input').attr("type") == "password") {
-                    $('#show_hide_password input').attr('type', 'text');
-                    $('#show_hide_password i').removeClass("bi-eye-slash-fill");
-                    $('#show_hide_password i').addClass("bi-eye-fill");
+            $(".password-toggle").on('click', function() {
+                const input = $(this).siblings('input');
+                const icon = $(this).find('i');
+                
+                if (input.attr("type") === "password") {
+                    input.attr("type", "text");
+                    icon.removeClass("bi-eye-slash-fill").addClass("bi-eye-fill");
+                } else {
+                    input.attr("type", "password");
+                    icon.removeClass("bi-eye-fill").addClass("bi-eye-slash-fill");
                 }
             });
         });
     </script>
-
 </body>
-
-
 </html>
