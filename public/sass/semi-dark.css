@@ -64,8 +64,9 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 [data-bs-theme=semi-dark] body .sidebar-wrapper .sidebar-nav .metismenu .mm-active > a {
-  color: #302f2f;
-  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  background-color: #0d6efd;
+  border-radius: 13px;
 }
 [data-bs-theme=semi-dark] body .sidebar-wrapper .menu-label {
   color: #000000;

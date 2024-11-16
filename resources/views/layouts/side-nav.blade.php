@@ -29,7 +29,7 @@
 
                <li>
                    <a href="{{ route('invoices.list') }}">
-                       <div class="parent-icon"><i class="material-icons-outlined">shopping_bag</i>
+                       <div class="parent-icon"><i class="material-icons-outlined">description</i>
                        </div>
                        <div class="menu-title">My Invoices</div>
                    </a>
