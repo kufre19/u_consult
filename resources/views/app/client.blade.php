@@ -18,9 +18,9 @@
                 </div>
                 <div class="action-button">
                     @if (auth()->user()->hasCompletedStripeOnboarding())
-                        <button type="button" class="btn btn-outline-primary addNewClientBtn">Add New Client</button>
+                        <button type="button" class="btn btn-alt-primary addNewClientBtn">Add New Client</button>
                     @else
-                        <a href="{{ route('stripe.onboarding') }}" class="btn btn-outline-primary">Verify Account</a>
+                        <a href="{{ route('stripe.onboarding') }}" class="btn btn-alt-primary">Verify Account</a>
                     @endif
                 </div>
             </div>

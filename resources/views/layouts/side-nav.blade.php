@@ -24,31 +24,31 @@
                </li>
 
 
-               <li class="menu-label">Invoice</li>
+               {{-- <li class="menu-label">Invoice</li> --}}
 
 
                <li>
                    <a href="{{ route('invoices.list') }}">
-                       <div class="parent-icon"><i class="material-icons-outlined">description</i>
+                       <div class="parent-icon"><i class="fas fa-file-invoice"></i>
                        </div>
                        <div class="menu-title">My Invoices</div>
                    </a>
 
                </li>
-               <li class="menu-label">Transactions</li>
+               {{-- <li class="menu-label">Transactions</li> --}}
 
                <li>
                    <a href="{{ route('transactions.list') }}">
-                       <div class="parent-icon"><i class="material-icons-outlined">receipt_long</i>
+                       <div class="parent-icon"><i class="fa fa-history"></i>
                        </div>
                        <div class="menu-title">Transactions Hisory</div>
                    </a>
 
                </li>
 
-               <li class="menu-label">Clients</li>
+               {{-- <li class="menu-label">Clients</li> --}}
 
-               <li>
+               {{-- <li>
                    @if (auth()->user()->hasCompletedStripeOnboarding())
                        <a href="#" class="addNewClientBtn">
                            <div class="parent-icon"><i class="material-icons-outlined">group_add</i>
@@ -56,13 +56,13 @@
                            <div class="menu-title">Add Client</div>
                        </a>
                    @endif
-               </li>
+               </li> --}}
 
                <li>
                    <a href="{{ route('clients.list') }}">
                        <div class="parent-icon"><i class="material-icons-outlined">group</i>
                        </div>
-                       <div class="menu-title">My Clients</div>
+                       <div class="menu-title">Clients</div>
                    </a>
 
                </li>

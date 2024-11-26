@@ -55,6 +55,17 @@ input::placeholder {
     opacity: 1;
   }
 }
+
+.btn-alt-primary{
+  background-color: #0066FF;
+  color: #ffff;
+}
+
+.btn-alt-primary:hover{
+  background-color: #0052CC;
+  color: #fff;
+
+}
 /*header*/
 .top-header .navbar {
   background-color: #ffffff;

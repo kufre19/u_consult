@@ -18,9 +18,9 @@
                 </div>
                 <div class="action-button">
                     @if(auth()->user()->hasCompletedStripeOnboarding())
-                        <button type="button" class="btn btn-outline-primary"  data-bs-toggle="modal" data-bs-target="#createInvoiceModal">New Invoice</button>
+                        <button type="button" class="btn btn-alt-primary"  data-bs-toggle="modal" data-bs-target="#createInvoiceModal">New Invoice</button>
                     @else
-                        <a href="{{ route('stripe.onboarding') }}" class="btn btn-outline-primary">Verify Account</a>
+                        <a href="{{ route('stripe.onboarding') }}" class="btn btn-alt-primary">Verify Account</a>
                     @endif
                 </div>
             </div>

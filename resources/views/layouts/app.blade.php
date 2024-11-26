@@ -32,6 +32,8 @@
     <link href="{{ asset('sass/bordered-theme.css') }}" rel="stylesheet">
     <link href="{{ asset('sass/responsive.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+
     @stack('extra-style')
 
     <style>
