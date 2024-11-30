@@ -3,74 +3,49 @@
 @section('main-content')
     <main class="main-wrapper">
         <div class="main-content">
-            <!--breadcrumb-->
-            <div class="page-breadcrumb d-flex flex-column flex-md-row align-items-center justify-content-between mb-3">
-                <div class="d-flex align-items-center mb-3 mb-md-0">
-                    <div class="breadcrumb-title pe-3">Dashboard</div>
-                    <div class="ps-3">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0 p-0">
-                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Clients List</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
+            <x-page-header 
+                title="Clients"
+                :breadcrumbs="[
+                    ['label' => 'Dashboard', 'url' => route('dashboard')],
+                    ['label' => 'Clients']
+                ]"
+            >
                 <div class="action-button">
                     @if (auth()->user()->hasCompletedStripeOnboarding())
-                        <button type="button" class="btn btn-alt-primary addNewClientBtn">Add New Client</button>
+                        <button type="button" class="btn btn-alt-primary addNewClientBtn">
+                            <i class="fa fa-plus"></i> Add New Client
+                        </button>
                     @else
-                        <a href="{{ route('stripe.onboarding') }}" class="btn btn-alt-primary">Verify Account</a>
+                        <a href="{{ route('stripe.onboarding') }}" class="btn btn-alt-primary">
+                            Verify Account
+                        </a>
                     @endif
                 </div>
-            </div>
-            <!--end breadcrumb-->
+            </x-page-header>
 
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="clientsTable" class="table table-striped table-bordered" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Client Name</th>
-                                    <th>Email</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <x-data-table 
+                title="Client List"
+                description="Manage all your clients in one place"
+                :columns="[
+                    ['key' => 'name', 'label' => 'Client Name'],
+                    ['key' => 'email', 'label' => 'Email'],
+                    ['key' => 'phone', 'label' => 'Phone'],
+                    ['key' => 'status', 'label' => 'Status'],
+                    ['key' => 'created_at', 'label' => 'Added On'],
+                    ['key' => 'action', 'label' => 'Actions']
+                ]"
+                :data-route="route('get.clients')"
+                :filters="false"
+            />
         </div>
     </main>
 @endsection
-{{-- @include('components.create-client-modal') --}}
 
 @push('extra-js')
-    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#clientsTable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('get.clients') }}",
-                columns: [{
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'actions',
-                        name: 'actions',
-                        orderable: false,
-                        searchable: false
-                    }
-                ]
-            });
-        });
-    </script>
+<script>
+    function viewDetails(id) {
+        // Handle client details view
+        window.location.href = `/clients/${id}`;
+    }
+</script>
 @endpush

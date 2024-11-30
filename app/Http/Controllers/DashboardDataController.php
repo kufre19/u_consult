@@ -6,65 +6,86 @@ use Illuminate\Http\Request;
 use App\Traits\StripeDataTrait;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Invoice;
+use App\Models\Transaction;
+use App\Models\Client;
 
 class DashboardDataController extends Controller
 {
     use StripeDataTrait;
 
 
-    public function getInvoices(Request $request)
+    public function getInvoices()
     {
-        $invoices = $request->user()->invoices()->orderBy('created_at', 'desc')->get();
+        $invoices = Invoice::with('client')
+            ->select([
+                'id',
+                'stripe_invoice_id',
+                'client_id',
+                'amount',
+                'status',
+                'stripe_created_at',
+                'invoice_url'
+            ])
+            ->latest()
+            ->get()
+            ->map(function ($invoice) {
+                return [
+                    'id' => $invoice->stripe_invoice_id,
+                    'client_name' => $invoice->client->name ?? 'N/A',
+                    'amount' => number_format($invoice->amount, 2),
+                    'due_date' => $invoice->stripe_created_at->format('d M, y'),
+                    'status' => $this->determineStatus($invoice),
+                    'action' => 'view'
+                ];
+            });
 
-        return DataTables::of($invoices)
-            ->addColumn('id', function ($invoice) {
-                return $invoice->stripe_invoice_id;
-            })
-            ->addColumn('client_name', function ($invoice) {
-                return $invoice->client_name;
-            })
-            ->addColumn('status', function ($invoice) {
-                return ucfirst($invoice->status);
-            })
-            ->addColumn('amount', function ($invoice) {
-                return number_format($invoice->amount, 2);
-            })
-            ->addColumn('invoice_url', function ($invoice) {
-                return '<a href="' . $invoice->invoice_url . '" class="btn btn-sm btn-primary" target="_blank">View</a>';
-            })
-            ->addColumn('created_at', function ($invoice) {
-                return $invoice->stripe_created_at->format('d-M-Y');
-            })
-            ->rawColumns(['invoice_url'])
-            ->make(true);
+        return response()->json($invoices);
     }
 
-    public function getTransactions(Request $request)
+    private function determineStatus($invoice)
     {
-        $transactions = $this->getConnectedAccountTransactions(Auth::user()->stripe_account_id);
-
-        return DataTables::of($transactions)
-            ->addColumn('id', function ($transaction) {
-                return $transaction->id;
-            })
-            ->addColumn('amount', function ($transaction) {
-                return number_format(($transaction->amount / 100), 2);
-            })
-
-            ->addColumn('type', function ($transaction) {
-                return $transaction->object;
-            })
-            ->addColumn('status', function ($transaction) {
-                return ucfirst($transaction->status);
-            })
-            ->addColumn('created_at', function ($transaction) {
-                return Date("d-M-Y", $transaction->created);
-            })
-
-            ->make(true);
+        if ($invoice->status === 'paid') return 'paid';
+        if ($invoice->status === 'pending') return 'awaiting';
+        if ($invoice->stripe_created_at->addDays(30)->isPast()) return 'overdue';
+        return 'awaiting';
     }
 
-   
+    public function getTransactions()
+    {
+        $transactions = Transaction::latest()
+            ->get()
+            ->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'amount' => number_format($transaction->amount, 2),
+                    'type' => $transaction->type,
+                    'status' => $transaction->status,
+                    'created_at' => $transaction->created_at->format('d M, Y'),
+                    'action' => 'view'
+                ];
+            });
+
+        return response()->json($transactions);
+    }
+
+    public function getClients()
+    {
+        $clients = Client::latest()
+            ->get()
+            ->map(function ($client) {
+                return [
+                    'name' => $client->name,
+                    'email' => $client->email,
+                    'phone' => $client->phone ?? 'N/A',
+                    'status' => $client->status,
+                    'created_at' => $client->created_at->format('d M, Y'),
+                    'action' => 'view'
+                ];
+            });
+
+        return response()->json($clients);
+    }
 
     public function invoicesList()
     {

@@ -3,58 +3,44 @@
 @section('main-content')
     <main class="main-wrapper">
         <div class="main-content">
-            <!--breadcrumb-->
-            <div class="page-breadcrumb d-flex flex-column flex-md-row align-items-center justify-content-between mb-3">
-                <div class="d-flex align-items-center mb-3 mb-md-0">
-                    <div class="breadcrumb-title pe-3">Dashboard</div>
-                    <div class="ps-3">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0 p-0">
-                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Home</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
+            <x-page-header 
+                title="Dashboard"
+                :breadcrumbs="[
+                    ['label' => 'Home']
+                ]"
+            >
                 <div class="action-button">
-                    @if(auth()->user()->hasCompletedStripeOnboarding())
-                        <button type="button" class="btn btn-alt-primary"  data-bs-toggle="modal" data-bs-target="#createInvoiceModal"> <i class="fa fa-plus"></i> New Invoice</button>
+                    @if (auth()->user()->hasCompletedStripeOnboarding())
+                        <button type="button" class="btn btn-alt-primary" data-bs-toggle="modal"
+                            data-bs-target="#createInvoiceModal">
+                            <i class="fa fa-plus"></i> New Invoice
+                        </button>
                     @else
-                        <a href="{{ route('stripe.onboarding') }}" class="btn btn-alt-primary">Verify Account</a>
+                        <a href="{{ route('stripe.onboarding') }}" class="btn btn-alt-primary">
+                            Verify Account
+                        </a>
                     @endif
                 </div>
-            </div>
-            <!--end breadcrumb-->
-
+            </x-page-header>
 
             <div class="row">
+                {{-- <h6 class="mb-0 text-uppercase">My Invoices</h6>
+                <hr> --}}
 
-
-
-
-                <h6 class="mb-0 text-uppercase">My Invoice </h6>
-                <hr>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="invoicesTable" class="table table-striped table-bordered" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>Invoice ID</th>
-                                        <th>Client Name</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Invoice Url</th>
-                                        <th>Created On</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                   
-                    </div>
-                </div>
+                <x-data-table 
+                    title="Recent Invoices"
+                    description="Overview of your latest invoices"
+                    :columns="[
+                        ['key' => 'id', 'label' => 'Invoice ID', 'prefix' => '#'],
+                        ['key' => 'client_name', 'label' => 'Client'],
+                        ['key' => 'amount', 'label' => 'Amount', 'prefix' => '$'],
+                        ['key' => 'due_date', 'label' => 'Due Date'],
+                        ['key' => 'status', 'label' => 'Status'],
+                        ['key' => 'action', 'label' => 'Action']
+                    ]"
+                    :data-route="route('get.invoices')"
+                />
             </div>
-
         </div>
     </main>
 @endsection
@@ -63,23 +49,11 @@
 {{-- @include('components.create-client-modal') --}}
 
 @push('extra-js')
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#invoicesTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{{ route('get.invoices') }}",
-            columns: [
-                {data: 'id', name: 'id'},
-                {data: 'client_name', name: 'client_name'},
-                {data: 'amount', name: 'amount'},
-                {data: 'status', name: 'status'},
-                {data: 'invoice_url', name: 'invoice_url', orderable: false, searchable: false},
-                {data: 'created_at', name: 'created_at'}
-            ]
-        });
-    });
-</script>
+    <script>
+
+
+        function viewDetails(id) {
+            window.location.href = `/invoices/${id}`;
+        }
+    </script>
 @endpush
