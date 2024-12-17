@@ -17,11 +17,9 @@ class DashboardDataController extends Controller
 
     public function getInvoices()
     {
-        $invoices = Invoice::with('client')
-            ->select([
+        $invoices = Invoice::select([
                 'id',
                 'stripe_invoice_id',
-                'client_id',
                 'amount',
                 'status',
                 'stripe_created_at',
@@ -32,7 +30,7 @@ class DashboardDataController extends Controller
             ->map(function ($invoice) {
                 return [
                     'id' => $invoice->stripe_invoice_id,
-                    'client_name' => $invoice->client->name ?? 'N/A',
+                    'client_names' => $invoice->client_name,
                     'amount' => number_format($invoice->amount, 2),
                     'due_date' => $invoice->stripe_created_at->format('d M, y'),
                     'status' => $this->determineStatus($invoice),

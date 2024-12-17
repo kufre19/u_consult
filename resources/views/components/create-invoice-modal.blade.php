@@ -1,61 +1,166 @@
 @if (auth()->user()->hasCompletedStripeOnboarding())
-
-<div class="modal fade" id="createInvoiceModal" tabindex="-1" aria-labelledby="createInvoiceModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-bottom-0 py-2 bg-grd-info">
-                <h5 class="modal-title text-white" id="createInvoiceModalLabel">Create New Invoice</h5>
-                <a href="javascript:;" class="primaery-menu-close" data-bs-dismiss="modal">
-                    <i class="material-icons-outlined">close</i>
-                </a>
-            </div>
-            <div class="modal-body">
-                <div class="form-body">
-                    <form id="createInvoiceForm" class="row g-3">
+    <div class="modal fade" id="createInvoiceModal" tabindex="-1" aria-labelledby="createInvoiceModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-sm">
+                <div class="modal-header border-0 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="{{ asset('assets/images/logo1.png') }}" alt="Logo" class="modal-logo"
+                            width="80" height="45">
+                        <div>
+                            <h5 class="modal-title fs-6 fw-bold mb-0" id="createInvoiceModalLabel">Create Invoice</h5>
+                            <p class="text-muted small mb-0">Fill out the form below to generate a professional invoice
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close small" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="createInvoiceForm">
                         @csrf
-                        <div class="col-md-12">
-                            <label for="clientSelect" class="form-label">Client</label>
-                            <select id="clientSelect" name="client_id" class="form-select" required>
-                                <option value="">Choose...</option>
-                            </select>
-                            <button type="button" class="btn btn-outline-secondary mt-1 btn-sm addNewClientBtn" >
-                                Add New Client
-                            </button>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="dueDate" class="form-label">Due Date</label>
-                            <input type="date" class="form-control" id="dueDate" name="due_date" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="currency" class="form-label">Currency</label>
-                            <select id="currency" name="currency" class="form-select" required>
-                                <option value="USD">USD</option>
-                                <option value="EUR">EUR</option>
-                                <option value="GBP">GBP</option>
-                                <option value="NGN">NGN</option>
+                        <div class="mb-3">
+                            <label for="clientSelect" class="form-label small mb-2">Client</label>
+                            <select id="clientSelect" name="client_id" class="form-select form-select-sm shadow-none"
+                                required>
+                                <option value="">Search or add new customer</option>
+                                <option value="add-new" class="addNewClientBtn text-primary border-top">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="material-icons-outlined">add</i>
+                                        Add new client
+                                    </div>
+                                </option>
                             </select>
                         </div>
-                        <div class="col-md-12">
-                            <h6>Invoice Items</h6>
-                            <div id="invoiceItems">
-                                <!-- Invoice items will be added here dynamically -->
+
+                        <div class="mb-3">
+                            <label for="dueDate" class="form-label small mb-2">Due Date</label>
+                            <input type="date" class="form-control form-control-sm shadow-none" id="dueDate"
+                                name="due_date" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="note" class="form-label small mb-2">Note</label>
+                            <textarea class="form-control form-control-sm shadow-none" id="note" name="note" rows="3"
+                                placeholder="Enter any additional details"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small mb-2">Invoice Item</label>
+                            <div id="invoiceItems" class="border-bottom mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    {{-- <div class="item-details">
+                                    <input type="text" class="form-control-plaintext form-control-sm" value="Landing page" readonly>
+                                </div> --}}
+                                    <div class="amount-details d-flex align-items-center gap-2">
+                                        <select class="form-select form-select-sm shadow-none" style="width: auto;" name="currency">
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                            <option value="GBP">GBP</option>
+                                            <option value="NGN">NGN</option>
+                                        </select>
+                                        {{-- <input type="number" class="form-control form-control-sm shadow-none" style="width: 100px;" value="1200">
+                                    <button type="button" class="btn btn-link text-danger p-0 small">
+                                        <i class="material-icons-outlined" style="font-size: 18px;">close</i>
+                                    </button> --}}
+                                    </div>
+                                </div>
                             </div>
-                            <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="addItemBtn">
-                                Add Item
+                            <button type="button" class="btn btn-link text-primary p-0 small" id="addItemBtn">
+                                <i class="material-icons-outlined align-middle" style="font-size: 18px;">add</i>
+                                Add item
                             </button>
                         </div>
-                        <div class="col-md-12">
-                            <h6>Total Amount: <span id="totalAmount">0.00</span></h6>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="text-muted small">Total Amount</span>
+                            <span class="fw-bold" id="totalAmount"></span>
                         </div>
-                        <div class="col-md-12">
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-grd-primary text-white">Create Invoice</button>
-                            </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Create Invoice</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <style>
+        .modal-content {
+            border: none;
+            border-radius: 12px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            border-color: #E5E7EB;
+            font-size: 14px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3B82F6;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .material-icons-outlined {
+            font-size: 18px;
+            vertical-align: middle;
+        }
+
+        .modal-header {
+            padding: 1.5rem 1.5rem 1rem;
+        }
+
+        .modal-logo {
+            border-radius: 12px;
+            padding: 8px;
+            background: #f8f9fa;
+        }
+
+        .btn-close {
+            background-size: 0.8em;
+        }
+
+        #clientSelect option {
+            padding: 8px 12px;
+        }
+
+        #clientSelect option[value="add-new"] {
+            border-top: 1px solid #e5e7eb;
+            margin-top: 4px;
+            padding-top: 8px;
+            color: #3B82F6;
+        }
+    </style>
 @endif
+
+<script>
+function populateClientDropdown() {
+    const select = document.getElementById('clientSelect');
+    
+    // Clear existing options except first (placeholder) and last (add new)
+    while (select.options.length > 2) {
+        select.remove(1);
+    }
+    
+    // Fetch clients and add them before the "Add new" option
+    fetch('/api/clients')  // or whatever your endpoint is
+        .then(response => response.json())
+        .then(clients => {
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = `${client.name} - ${client.email}`;
+                // Insert before the last option (Add new client)
+                select.insertBefore(option, select.lastElementChild);
+            });
+        });
+}
+</script>
