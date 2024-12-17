@@ -158,36 +158,3 @@
         }
     </style>
 @endif
-
-<script>
-    function populateClientDropdown() {
-        const select = document.getElementById('clientSelect');
-        
-        // Clear existing options except first (placeholder)
-        while (select.options.length > 1) {
-            select.remove(1);
-        }
-        
-        // Fetch clients and add them
-        fetch('/api/clients')
-            .then(response => response.json())
-            .then(clients => {
-                clients.forEach(client => {
-                    const option = document.createElement('option');
-                    option.value = client.id;
-                    option.textContent = `${client.name} - ${client.email}`;
-                    select.appendChild(option);
-                });
-
-                // Add the "Add new client" option after all clients
-                const addNewOption = document.createElement('option');
-                addNewOption.value = 'add-new';
-                addNewOption.textContent = '+ Add new client';
-                addNewOption.className = 'addNewClientBtn';
-                select.appendChild(addNewOption);
-            })
-            .catch(error => {
-                console.error('Error fetching clients:', error);
-            });
-    }
-</script>

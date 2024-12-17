@@ -54,6 +54,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function populateClientDropdown() {
+        const select = document.getElementById('clientSelect');
+        
+        // Clear existing options except first (placeholder)
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+        
+        // Add change event listener to handle "Add new client" option
+        select.addEventListener('change', function(e) {
+            if (e.target.value === 'add-new') {
+                // Reset the select back to placeholder
+                e.target.value = '';
+                
+                // Show the client modal
+                wasInvoiceModalOpen = true;
+                $('#createInvoiceModal').modal('hide');
+                $('#createClientModal').modal('show');
+            }
+        });
+        
+        // Fetch clients and add them
         fetch('/dashboard/stripe/customers', {
             method: 'GET',
             headers: {
@@ -63,18 +84,23 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
-                const clientSelect = document.getElementById('clientSelect');
-                if (!clientSelect) return;
-                clientSelect.innerHTML = '<option value="">Choose...</option>'; // Reset options
                 data.forEach(client => {
                     const option = document.createElement('option');
                     option.value = client.stripe_customer_id;
-                    option.textContent = client.name || client.email;
-                    clientSelect.appendChild(option);
+                    option.textContent = `${client.name || ''} - ${client.email}`;
+                    select.appendChild(option);
                 });
+
+                // Add the "Add new client" option after all clients
+                const addNewOption = document.createElement('option');
+                addNewOption.value = 'add-new';
+                addNewOption.textContent = '+ Add new client';
+                addNewOption.className = 'text-primary fw-medium border-top';
+                select.appendChild(addNewOption);
             })
-            .catch(error => console.error('Error fetching Stripe customers:', error));
+            .catch(error => {
+                console.error('Error fetching clients:', error);
+            });
     }
 
     function handleInvoiceSubmission(e) {
