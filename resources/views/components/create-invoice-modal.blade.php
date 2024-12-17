@@ -20,15 +20,9 @@
                         @csrf
                         <div class="mb-3">
                             <label for="clientSelect" class="form-label small mb-2">Client</label>
-                            <select id="clientSelect" name="client_id" class="form-select form-select-sm shadow-none"
-                                required>
+                            <select id="clientSelect" name="client_id" class="form-select form-select-sm shadow-none" required>
                                 <option value="">Search or add new customer</option>
-                                <option value="add-new" class="addNewClientBtn text-primary border-top">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="material-icons-outlined">add</i>
-                                        Add new client
-                                    </div>
-                                </option>
+                                <!-- Clients will be populated here via JS -->
                             </select>
                         </div>
 
@@ -52,7 +46,8 @@
                                     <input type="text" class="form-control-plaintext form-control-sm" value="Landing page" readonly>
                                 </div> --}}
                                     <div class="amount-details d-flex align-items-center gap-2">
-                                        <select class="form-select form-select-sm shadow-none" style="width: auto;" name="currency">
+                                        <select class="form-select form-select-sm shadow-none" style="width: auto;"
+                                            name="currency">
                                             <option value="USD">USD</option>
                                             <option value="EUR">EUR</option>
                                             <option value="GBP">GBP</option>
@@ -66,7 +61,7 @@
                                 </div>
                             </div>
                             <button type="button" class="btn btn-link text-primary p-0 small" id="addItemBtn">
-                                <i class="material-icons-outlined align-middle" style="font-size: 18px;">add</i>
+                                <i class="material-icons-outlined align-middle" style="font-size: 18px;"></i>
                                 Add item
                             </button>
                         </div>
@@ -137,30 +132,62 @@
             margin-top: 4px;
             padding-top: 8px;
             color: #3B82F6;
+            font-weight: 500;
+        }
+
+        .dropdown-menu {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        #clientList {
+            margin-bottom: 0;
+        }
+
+        #clientList li {
+            list-style: none;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
         }
     </style>
 @endif
 
 <script>
-function populateClientDropdown() {
-    const select = document.getElementById('clientSelect');
-    
-    // Clear existing options except first (placeholder) and last (add new)
-    while (select.options.length > 2) {
-        select.remove(1);
-    }
-    
-    // Fetch clients and add them before the "Add new" option
-    fetch('/api/clients')  // or whatever your endpoint is
-        .then(response => response.json())
-        .then(clients => {
-            clients.forEach(client => {
-                const option = document.createElement('option');
-                option.value = client.id;
-                option.textContent = `${client.name} - ${client.email}`;
-                // Insert before the last option (Add new client)
-                select.insertBefore(option, select.lastElementChild);
+    function populateClientDropdown() {
+        const select = document.getElementById('clientSelect');
+        
+        // Clear existing options except first (placeholder)
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+        
+        // Fetch clients and add them
+        fetch('/api/clients')
+            .then(response => response.json())
+            .then(clients => {
+                clients.forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client.id;
+                    option.textContent = `${client.name} - ${client.email}`;
+                    select.appendChild(option);
+                });
+
+                // Add the "Add new client" option after all clients
+                const addNewOption = document.createElement('option');
+                addNewOption.value = 'add-new';
+                addNewOption.textContent = '+ Add new client';
+                addNewOption.className = 'addNewClientBtn';
+                select.appendChild(addNewOption);
+            })
+            .catch(error => {
+                console.error('Error fetching clients:', error);
             });
-        });
-}
+    }
 </script>
