@@ -23,14 +23,15 @@ class DashboardDataController extends Controller
                 'amount',
                 'status',
                 'stripe_created_at',
-                'invoice_url'
+                'invoice_url',
+                'client_name'
             ])
             ->latest()
             ->get()
             ->map(function ($invoice) {
                 return [
                     'id' => $invoice->stripe_invoice_id,
-                    'client_names' => $invoice->client_name,
+                    'client_name' => $invoice->client_name ?? 'N/A',
                     'amount' => number_format($invoice->amount, 2),
                     'due_date' => $invoice->stripe_created_at->format('d M, y'),
                     'status' => $this->determineStatus($invoice),

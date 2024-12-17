@@ -17,8 +17,9 @@
                     </div>
                 </div>
                 <div class="action-button">
-                    @if(auth()->user()->hasCompletedStripeOnboarding())
-                        <button type="button" class="btn btn-alt-primary"  data-bs-toggle="modal" data-bs-target="#createInvoiceModal"><i class="fa fa-plus"></i> New Invoice</button>
+                    @if (auth()->user()->hasCompletedStripeOnboarding())
+                        <button type="button" class="btn btn-alt-primary" data-bs-toggle="modal"
+                            data-bs-target="#createInvoiceModal"><i class="fa fa-plus"></i> New Invoice</button>
                     @else
                         <a href="{{ route('stripe.onboarding') }}" class="btn btn-alt-primary">Verify Account</a>
                     @endif
@@ -49,23 +50,7 @@
 @endsection
 
 @push('extra-js')
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#invoicesTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{{ route('get.invoices') }}",
-            columns: [
-                {data: 'id', name: 'id'},
-                {data: 'client_name', name: 'client_name'},
-                {data: 'amount', name: 'amount'},
-                {data: 'status', name: 'status'},
-                {data: 'invoice_url', name: 'invoice_url', orderable: false, searchable: false},
-                {data: 'created_at', name: 'created_at'}
-            ]
-        });
-    });
-</script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
+ 
 @endpush
