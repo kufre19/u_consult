@@ -72,6 +72,73 @@
 .status-paid { background: #dcfce7; color: #16a34a; }
 .status-awaiting { background: #fef9c3; color: #ca8a04; }
 .status-overdue { background: #fee2e2; color: #dc2626; }
+
+/* Add these new styles */
+.filter-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.filter-dropdown {
+    display: none;
+}
+
+.filter-dropdown select {
+    width: 100%;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background-color: white;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.dropdown-item.active {
+    background-color: #f1f5f9;
+    color: #0ea5e9;
+}
+
+.selected-filter {
+    background-color: white !important;
+    border-color: #e2e8f0 !important;
+    text-align: left;
+    width: 100%;
+    font-weight: 500;
+}
+
+.selected-filter:hover, 
+.selected-filter:focus {
+    border-color: #0ea5e9 !important;
+}
+
+@media (max-width: 768px) {
+    .custom-tabs {
+        display: none !important;
+    }
+    
+    .filter-dropdown {
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .d-flex.justify-content-between {
+        flex-direction: column;
+    }
+
+    .d-flex.gap-2 {
+        width: 100%;
+    }
+
+    .search-wrapper {
+        flex: 1;
+    }
+
+    .filter-section {
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+}
 </style>
 @endpush
 
@@ -98,27 +165,43 @@
             @endif
 
             @if($filters)
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <ul class="nav custom-tabs">
-                    <li class="nav-item">
-                        <button class="nav-link active" data-filter="all">All</button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" data-filter="paid">Paid</button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" data-filter="awaiting">Awaiting</button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" data-filter="overdue">Overdue</button>
-                    </li>
-                </ul>
-                
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="filter-section">
+                    <!-- Desktop Tabs -->
+                    <ul class="nav custom-tabs d-none d-md-flex">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-filter="all">All</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-filter="paid">Paid</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-filter="awaiting">Awaiting</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-filter="overdue">Overdue</button>
+                        </li>
+                    </ul>
+
+                    <!-- Mobile Dropdown -->
+                    <div class="dropdown d-md-none">
+                        <button class="btn btn-outline-secondary dropdown-toggle selected-filter" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            All Invoices
+                        </button>
+                        <ul class="dropdown-menu w-100">
+                            <li><a class="dropdown-item active" href="#" data-filter="all">All Invoices</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="paid">Paid</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="awaiting">Awaiting</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="overdue">Overdue</a></li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="d-flex gap-2">
                     <div class="search-wrapper">
                         <input type="text" id="searchInput" class="form-control" placeholder="Search details">
                     </div>
-                    <button class="btn btn-outline-primary">Default filter</button>
+                    <button class="btn btn-outline-primary d-none d-md-block">Default filter</button>
                 </div>
             </div>
             @endif
@@ -154,23 +237,39 @@ document.addEventListener('DOMContentLoaded', function() {
             renderTableData(tableData);
         });
 
-    // Filter buttons
+    // Update filter handling to work with both tabs and dropdown
     if (document.querySelector('.custom-tabs')) {
         document.querySelectorAll('.custom-tabs .nav-link').forEach(button => {
             button.addEventListener('click', (e) => {
+                handleFilter(e.target.dataset.filter);
+                
+                // Update active state for tabs
                 document.querySelectorAll('.custom-tabs .nav-link').forEach(btn => 
                     btn.classList.remove('active'));
-                
                 e.target.classList.add('active');
-                
-                const filter = e.target.dataset.filter;
-                const filtered = filter === 'all' 
-                    ? tableData 
-                    : tableData.filter(t => t.status.toLowerCase() === filter);
-                
-                renderTableData(filtered);
             });
         });
+    }
+
+    // Add dropdown change handler
+    const filterSelect = document.getElementById('filterSelect');
+    if (filterSelect) {
+        filterSelect.addEventListener('change', (e) => {
+            handleFilter(e.target.value);
+            
+            // Update active state for tabs (in case of desktop view)
+            document.querySelectorAll('.custom-tabs .nav-link').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === e.target.value);
+            });
+        });
+    }
+
+    // Common filter handling function
+    function handleFilter(filter) {
+        const filtered = filter === 'all' 
+            ? tableData 
+            : tableData.filter(t => t.status.toLowerCase() === filter);
+        renderTableData(filtered);
     }
 
     // Search functionality
@@ -223,6 +322,35 @@ document.addEventListener('DOMContentLoaded', function() {
             return `<td>${column.prefix || ''}${value}${column.suffix || ''}</td>`;
         }).join('');
     }
+
+    // Handle mobile dropdown clicks
+    document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const filter = e.target.dataset.filter;
+            const filterText = e.target.textContent;
+            
+            // Update dropdown button text
+            const dropdownButton = document.querySelector('.selected-filter');
+            if (dropdownButton) {
+                dropdownButton.textContent = filterText;
+            }
+            
+            // Update active state in dropdown
+            document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(dropItem => {
+                dropItem.classList.remove('active');
+            });
+            e.target.classList.add('active');
+            
+            // Handle filtering
+            handleFilter(filter);
+            
+            // Update desktop tabs if visible
+            document.querySelectorAll('.custom-tabs .nav-link').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+        });
+    });
 });
 
 function viewDetails(id) {
